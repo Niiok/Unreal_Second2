@@ -23,7 +23,7 @@ class UNREAL_SECOND2_API UCStateComponent : public UActorComponent
 	GENERATED_BODY()
 
 private:
-	EStateType Type;
+	EStateType Type = EStateType::Idle;
 
 public:	
 	// Sets default values for this component's properties

@@ -35,7 +35,7 @@ ACPlayer::ACPlayer()
 	CHelpers::GetClass<UAnimInstance>(&animInstance, "AnimBlueprint'/Game/Player/ABP_CPlayer.ABP_CPlayer_C'");
 	GetMesh()->SetAnimInstanceClass(animInstance);
 
-	SpringArm->TargetArmLength = 200.0f;
+	SpringArm->TargetArmLength = 300.0f;
 	SpringArm->bDoCollisionTest = false;
 	SpringArm->bUsePawnControlRotation = true;
 	SpringArm->bEnableCameraLag = true;
@@ -67,7 +67,6 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("VerticalLook", this, &ACPlayer::OnVerticalLook);
 
 	PlayerInputComponent->BindAction("Avoid", IE_Pressed, this, &ACPlayer::OnAvoid);
-
 }
 
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
@@ -125,17 +124,34 @@ void ACPlayer::OnAvoid()
 
 void ACPlayer::Begin_Roll()
 {
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+
+	FVector start = GetActorLocation();
+	FVector dest = start + GetActorForwardVector().GetSafeNormal2D();
+	SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, dest));
+
+	Montages->PlayRoll();
 }
 
 void ACPlayer::Begin_Backstep()
 {
+	bUseControllerRotationYaw = true;
+	GetCharacterMovement()->bOrientRotationToMovement = false;
+
+	Montages->PlayBackstep();
 }
 
 void ACPlayer::End_Roll()
 {
+	State->SetIdleMode();
 }
 
 void ACPlayer::End_Backstep()
 {
+	bUseControllerRotationYaw = false;
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	
+	State->SetIdleMode();
 }
 
