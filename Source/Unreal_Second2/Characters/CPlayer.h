@@ -25,9 +25,12 @@ private:
 	
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCStateComponent* State;	
-
+	
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCMontagesComponent* Montages;	
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCActionComponent* Action;	
 
 public:
 	ACPlayer();
@@ -57,4 +60,8 @@ private:
 public:
 	void End_Roll();
 	void End_Backstep();
+
+private:
+	void OnOneHand();
+
 };

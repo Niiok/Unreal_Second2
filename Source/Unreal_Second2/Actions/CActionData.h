@@ -30,14 +30,23 @@ class UNREAL_SECOND2_API UCActionData : public UDataAsset
 {
 	GENERATED_BODY()
 
+public:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<class ACEquipment> EquipmentClass;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		TSubclassOf<class ACAttachment> AttachmentClass;
+	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+		FEquipmentData EquipmentData;
+
 private:
 	class ACEquipment* Equipment;
+	class ACAttachment* Attachment;
+
 
 public:
 	void BeginPlay(class ACharacter* InOwnerCharacter);
 
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		TSubclassOf<class ACEqiopment> EquipmentClass;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
-		FEquipmentData EquipmentData;
+public:
+	FORCEINLINE class ACEquipment* GetEquipment() { return Equipment; }
+
 };

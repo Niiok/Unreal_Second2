@@ -9,6 +9,8 @@
 #include "Component/CStatusComponent.h"
 #include "Component/CStateComponent.h"
 #include "Component/CMontagesComponent.h"
+#include "Component/CActionComponent.h"
+
 
 ACPlayer::ACPlayer()
 {
@@ -20,6 +22,7 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent<UCStatusComponent>(this, &Status, "Status");
 	CHelpers::CreateActorComponent<UCStateComponent>(this, &State, "State");
 	CHelpers::CreateActorComponent<UCMontagesComponent>(this, &Montages, "Montages");
+	CHelpers::CreateActorComponent<UCActionComponent>(this, &Action, "Action");
 
 	bUseControllerRotationYaw = false;
 
@@ -67,6 +70,8 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAxis("VerticalLook", this, &ACPlayer::OnVerticalLook);
 
 	PlayerInputComponent->BindAction("Avoid", IE_Pressed, this, &ACPlayer::OnAvoid);
+
+	PlayerInputComponent->BindAction("OneHand", IE_Pressed, this, &ACPlayer::OnOneHand);
 }
 
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
@@ -128,7 +133,13 @@ void ACPlayer::Begin_Roll()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 
 	FVector start = GetActorLocation();
-	FVector dest = start + GetActorForwardVector().GetSafeNormal2D();
+	FVector dest;
+
+	if (GetVelocity() == FVector::ZeroVector)
+		dest = start + GetActorForwardVector().GetSafeNormal2D();
+	else
+		dest = start + GetVelocity().GetSafeNormal2D();
+
 	SetActorRotation(UKismetMathLibrary::FindLookAtRotation(start, dest));
 
 	Montages->PlayRoll();
@@ -144,14 +155,32 @@ void ACPlayer::Begin_Backstep()
 
 void ACPlayer::End_Roll()
 {
+	if (Action->IsUnarmedMode() == false)
+	{
+		bUseControllerRotationYaw = true;
+		GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+
 	State->SetIdleMode();
 }
 
 void ACPlayer::End_Backstep()
 {
+	if (Action->IsUnarmedMode())
+	{
+		bUseControllerRotationYaw = false;
+		GetCharacterMovement()->bOrientRotationToMovement = true;
+	}
+
 	bUseControllerRotationYaw = false;
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 	State->SetIdleMode();
+}
+
+void ACPlayer::OnOneHand()
+{
+	CheckFalse(State->IsIdleMode());
+	Action->SetOneHandMode();
 }
 

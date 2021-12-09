@@ -26,7 +26,8 @@ class UNREAL_SECOND2_API UCActionComponent : public UActorComponent
 private:
 	EActionType Type;
 
-
+	UPROPERTY(EditDefaultsOnly, Category = "Weapons")
+		class UCActionData* Datas[(int32)EActionType::EnumMax];
 
 public:	
 	// Sets default values for this component's properties
@@ -56,4 +57,8 @@ public:
 	void SetUnarmedMode();
 	void SetOneHandMode();
 	void SetTwoHandMode();
+
+public:
+	UFUNCTION(BlueprintPure)
+		FORCEINLINE class UCActionData* GetCurrent() { return Datas[(int32)Type]; }
 };

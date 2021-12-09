@@ -12,7 +12,7 @@ enum class EStateType : uint8
 	Idle,
 	Roll,
 	Backstep,
-	Equip.
+	Equip,
 	Unequip,
 	EnumMax
 };

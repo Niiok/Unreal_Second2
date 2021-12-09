@@ -7,6 +7,9 @@
 #include "Actions/CActionData.h"
 #include "CEquipment.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FEquipmentDelegate);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FUnequipmentDelegate);
+
 UCLASS()
 class UNREAL_SECOND2_API ACEquipment : public AActor
 {
@@ -34,27 +37,32 @@ protected:
 	virtual void BeginPlay() override;
 
 public:
+	UPROPERTY(BlueprintAssignable)
+		FEquipmentDelegate OnEquipmentDelegate;
+	UPROPERTY(BlueprintAssignable)
+		FUnequipmentDelegate OnUnequipmentDelegate;
+
+public:
 	UFUNCTION(BlueprintNativeEvent)
 		void Equip();
-	void Equip_Implemention();
+	void Equip_Implementation();
 
 	UFUNCTION(BlueprintNativeEvent)
 		void Begin_Equip();
-	void Begin_Equip_Implemetion();
+	void Begin_Equip_Implementation();
 	
 	UFUNCTION(BlueprintNativeEvent)
 		void End_Equip();
-	void End_Equip_Implemetion();
+	void End_Equip_Implementation();
 	
 
 	UFUNCTION(BlueprintNativeEvent)
 		void Unequip();
-	void Unequip_Implemetion();
+	void Unequip_Implementation();
 
 
 
 public:
-	FORCEINLINE void SetData(FEquipmentData data) 
-	{}
+	FORCEINLINE void SetData(FEquipmentData InData) { Data = InData; }
 
 };
