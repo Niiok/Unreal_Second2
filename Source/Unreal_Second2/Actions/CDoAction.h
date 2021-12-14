@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
+#include "Actions/CActionData.h"
 #include "CDoAction.generated.h"
 
 UCLASS()
@@ -21,6 +22,9 @@ UPROPERTY(BlueprintReadOnly)
 UPROPERTY(BlueprintReadOnly)
 		class UCStatusComponent* Status;
 
+protected:
+	TArray<FDoActionData> Datas;
+
 public:	
 	// Sets default values for this actor's properties
 	ACDoAction();
@@ -37,5 +41,8 @@ public:
 	virtual void DoAction() {}
 	virtual void Begin_DoAction() {}
 	virtual void End_DoAction() {}
+
+public:
+	FORCEINLINE void SetDatas(TArray<FDoActionData> InDatas) { Datas = InDatas; }
 
 };
