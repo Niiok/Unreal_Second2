@@ -19,4 +19,14 @@ public:
 	virtual void Begin_DoAction() override;
 	virtual void End_DoAction() override;
 
+private:
+	bool bExist;
+	bool bEnable;
+	bool bLast;
+	int32 Index;
+
+public:
+	FORCEINLINE void EnableCombo() { bEnable = true; }
+	FORCEINLINE void DisableCombo() { bEnable = false; }
+
 };
