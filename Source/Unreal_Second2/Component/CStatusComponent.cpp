@@ -21,9 +21,11 @@ void UCStatusComponent::BeginPlay()
 
 void UCStatusComponent::SetMove()
 {
+	bCanMove = true;
 }
 
 void UCStatusComponent::SetStop()
 {
+	bCanMove = false;
 }
 
