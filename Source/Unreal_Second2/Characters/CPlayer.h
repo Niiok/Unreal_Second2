@@ -3,10 +3,11 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Component/CStateComponent.h"
+#include "ICharacter.h"
 #include "CPlayer.generated.h"
 
 UCLASS()
-class UNREAL_SECOND2_API ACPlayer : public ACharacter
+class UNREAL_SECOND2_API ACPlayer : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
 
@@ -64,5 +65,13 @@ public:
 private:
 	void OnOneHand();
 	void OnDoAction();
+
+private:
+	class UMaterialInstanceDynamic* BodyMaterial;
+	class UMaterialInstanceDynamic* LogoMaterial;
+
+
+	// IICharacter을(를) 통해 상속됨
+	virtual void ChangeColor(FLinearColor InColor);
 
 };

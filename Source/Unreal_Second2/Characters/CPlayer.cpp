@@ -10,6 +10,8 @@
 #include "Component/CStateComponent.h"
 #include "Component/CMontagesComponent.h"
 #include "Component/CActionComponent.h"
+#include "Materials/MaterialInstanceConstant.h"
+#include "Materials/MaterialInstanceDynamic.h"
 
 
 ACPlayer::ACPlayer()
@@ -52,6 +54,22 @@ void ACPlayer::BeginPlay()
 	Super::BeginPlay();
 
 	State->OnStateTypeChanged.AddDynamic(this, &ACPlayer::OnStateTypeChanged);
+
+	UMaterialInstanceConstant* body;
+	UMaterialInstanceConstant* logo;
+	
+	CHelpers::GetAssetDynamic<UMaterialInstanceConstant>(&body, 
+		L"MaterialInstanceConstant'/Game/Materials/M_UE4Man_Body_Inst.M_UE4Man_Body_Inst'");
+	CHelpers::GetAssetDynamic<UMaterialInstanceConstant>(&logo, 
+		L"MaterialInstanceConstant'/Game/Materials/M_UE4Man_ChestLogo_Inst.M_UE4Man_ChestLogo_Inst'");
+
+	BodyMaterial = UMaterialInstanceDynamic::Create(body, this);
+	LogoMaterial = UMaterialInstanceDynamic::Create(logo, this);
+
+	GetMesh()->SetMaterial(0, BodyMaterial);
+	GetMesh()->SetMaterial(1, LogoMaterial);
+
+	Action->SetUnarmedMode();
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -187,3 +205,8 @@ void ACPlayer::OnDoAction()
 	Action->DoAction();
 }
 
+void ACPlayer::ChangeColor(FLinearColor InColor)
+{
+	BodyMaterial->SetVectorParameterValue("BodyColor", InColor);
+	LogoMaterial->SetVectorParameterValue("LogoColor", InColor);
+}

@@ -3,6 +3,7 @@
 
 #include "CEquipment.h"
 #include "Global.h"
+#include "Characters/ICharacter.h"
 #include "GameFramework/Character.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Component/CStateComponent.h"
@@ -37,8 +38,16 @@ void ACEquipment::Equip_Implementation()
 		End_Equip();
 	}
 
-	OwnerCharacter->bUseControllerRotationYaw = true;
-	OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
+	if (Data.bPawnControl == true)
+	{
+		OwnerCharacter->bUseControllerRotationYaw = true;
+		OwnerCharacter->GetCharacterMovement()->bOrientRotationToMovement = false;
+	}
+
+	IICharacter* character = Cast<IICharacter>(OwnerCharacter);
+	CheckNull(character);
+
+	character->ChangeColor(Color);
 }
 
 void ACEquipment::Begin_Equip_Implementation()
