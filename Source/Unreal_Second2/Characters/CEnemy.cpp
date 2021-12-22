@@ -11,12 +11,16 @@
 //#include "Components/SkeletalMeshComponent.h"
 //#include "Components/InputComponent.h"
 //#include "Component/COptionComponent.h"
-//#include "Component/CStatusComponent.h"
-//#include "Component/CStateComponent.h"
-//#include "Component/CMontagesComponent.h"
-//#include "Component/CActionComponent.h"
+#include "Component/CStatusComponent.h"
+
+#include "Component/CMontagesComponent.h"
+#include "Component/CActionComponent.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
+
+#include "Components/WidgetComponent.h"
+#include "Widgets/CUserWidget_Name.h"
+#include "Widgets/CUserWidget_Health.h"
 
 // Sets default values
 ACEnemy::ACEnemy()
@@ -24,8 +28,17 @@ ACEnemy::ACEnemy()
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
+	CHelpers::CreateComponent<UWidgetComponent>(this, &NameWidget, "NameWidget", GetMesh());
+	CHelpers::CreateComponent<UWidgetComponent>(this, &HealthWidget, "HealthWidget", GetMesh());
+
+
 	GetMesh()->SetRelativeLocation(FVector(0, 0, -90));
 	GetMesh()->SetRelativeRotation(FRotator(0, -90, 0));
+
+	CHelpers::CreateActorComponent<UCStatusComponent>(this, &Status, "Status");
+	CHelpers::CreateActorComponent<UCStateComponent>(this, &State, "State");
+	CHelpers::CreateActorComponent<UCMontagesComponent>(this, &Montages, "Montages");
+	CHelpers::CreateActorComponent<UCActionComponent>(this, &Action, "Action");
 
 	USkeletalMesh* mesh;
 	CHelpers::GetAsset<USkeletalMesh>(&mesh, "SkeletalMesh'/Game/Character/Mesh/SK_Mannequin.SK_Mannequin'");
@@ -37,12 +50,28 @@ ACEnemy::ACEnemy()
 	GetMesh()->SetAnimInstanceClass(animInstance);
 
 	GetCharacterMovement()->RotationRate = FRotator(0, 720, 0);
+
+	TSubclassOf<UCUserWidget_Name> nameClass;
+	CHelpers::GetClass<UCUserWidget_Name>(&nameClass, 
+		"WidgetBlueprint'/Game/Widgets/WB_Name.WB_Name_C'");
+	NameWidget->SetWidgetClass(nameClass);
+	NameWidget->SetRelativeLocation(FVector(0, 0, 240));
+	NameWidget->SetDrawSize(FVector2D(240, 30));
+	NameWidget->SetWidgetSpace(EWidgetSpace::Screen);
+
+	TSubclassOf<UCUserWidget_Health> healthClass;
+	CHelpers::GetClass<UCUserWidget_Health>(&healthClass, 
+		"WidgetBlueprint'/Game/Widgets/WB_Health.WB_Health_C'");
+	HealthWidget->SetWidgetClass(healthClass);
+	HealthWidget->SetRelativeLocation(FVector(0, 0, 190));
+	HealthWidget->SetDrawSize(FVector2D(120, 20));
+	HealthWidget->SetWidgetSpace(EWidgetSpace::Screen);
+
 }
 
 // Called when the game starts or when spawned
 void ACEnemy::BeginPlay()
 {
-	Super::BeginPlay();
 	
 	UMaterialInstanceConstant* body;
 	UMaterialInstanceConstant* logo;
@@ -57,13 +86,24 @@ void ACEnemy::BeginPlay()
 
 	GetMesh()->SetMaterial(0, BodyMaterial);
 	GetMesh()->SetMaterial(1, LogoMaterial);
+
+	Super::BeginPlay();
+
+	State->OnStateTypeChanged.AddDynamic(this, &ACEnemy::OnStateTypeChanged);
+
+	NameWidget->InitWidget();
+	Cast<UCUserWidget_Name>(NameWidget->GetUserWidgetObject())->SetNameText(GetActorLabel());
+	HealthWidget->InitWidget();
+	Cast<UCUserWidget_Health>(HealthWidget->GetUserWidgetObject())->Update(Status->GetHealth(), Status->GetMaxHealth());
+
+	Action->SetUnarmedMode();
 }
 
 // Called every frame
 void ACEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	//HealthWidget->Update(Status->GetHealth(), Status->GetMaxHealth());
 }
 
 void ACEnemy::ChangeColor(FLinearColor InColor)
@@ -72,6 +112,18 @@ void ACEnemy::ChangeColor(FLinearColor InColor)
 	LogoMaterial->SetVectorParameterValue("LogoColor", InColor);
 }
 
+float ACEnemy::TakeDamage(float Damage, FDamageEvent const & DamageEvent, AController * EventInstigator, AActor * DamageCauser)
+{
+	Super::TakeDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
+
+	CLog::Log(Damage);
+
+	return 0;
+}
+
+void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
+{
+}
 // Called to bind functionality to input
 //void ACEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 //{

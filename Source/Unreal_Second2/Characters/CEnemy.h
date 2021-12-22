@@ -5,12 +5,37 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
 #include "Characters/ICharacter.h"
+#include "Component/CStateComponent.h"
 #include "CEnemy.generated.h"
 
 UCLASS()
 class UNREAL_SECOND2_API ACEnemy : public ACharacter, public IICharacter
 {
 	GENERATED_BODY()
+
+private:
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCStatusComponent* Status;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCStateComponent* State;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCMontagesComponent* Montages;
+
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCActionComponent* Action;
+
+protected:
+	UPROPERTY(VisibleDefaultsOnly)
+		class UWidgetComponent* NameWidget;
+	UPROPERTY(VisibleDefaultsOnly)
+		class UWidgetComponent* HealthWidget;
+
+private:
+	class UMaterialInstanceDynamic* BodyMaterial;
+	class UMaterialInstanceDynamic* LogoMaterial;
+
 
 public:
 	// Sets default values for this character's properties
@@ -29,11 +54,14 @@ public:
 
 
 
-private:
-	class UMaterialInstanceDynamic* BodyMaterial;
-	class UMaterialInstanceDynamic* LogoMaterial;
-
 	// IICharacter을(를) 통해 상속됨
 	virtual void ChangeColor(FLinearColor InColor);
 
+	float TakeDamage(float Damage, struct FDamageEvent const& DamageEvent,
+		AController* EventInstigator, AActor* DamageCauser) override;
+
+
+private:
+	UFUNCTION()
+		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
 };

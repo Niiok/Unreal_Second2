@@ -16,6 +16,8 @@ void UCStatusComponent::BeginPlay()
 	Super::BeginPlay();
 
 	// ...
+
+	Health = MaxHealth;
 	
 }
 
