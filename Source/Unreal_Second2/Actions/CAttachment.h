@@ -16,6 +16,8 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_ThreeParams(FAttachmentEndOverlap,
 												class AActor*, InAttackCauser,
 												class ACharacter*, InOtherCharacter);
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FAttachmentCollision);
+
 UCLASS()
 class UNREAL_SECOND2_API ACAttachment : public AActor
 {
@@ -58,6 +60,10 @@ public:
 		FAttachmentBeginOverlap OnAttachmentBeginOverlap;
 	UPROPERTY(BlueprintAssignable)
 		FAttachmentEndOverlap OnAttachmentEndOverlap;
+	UPROPERTY(BlueprintAssignable)
+		FAttachmentCollision OnAttachmentCollision;
+	UPROPERTY(BlueprintAssignable)
+		FAttachmentCollision OffAttachmentCollision;
 
 
 private:

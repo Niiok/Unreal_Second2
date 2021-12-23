@@ -33,6 +33,11 @@ protected:
 		class UWidgetComponent* HealthWidget;
 
 private:
+	UPROPERTY(EditAnywhere, Category = "Hitted")
+		float LaunchAmount = 100.0f;
+
+
+private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
 
@@ -64,4 +69,13 @@ public:
 private:
 	UFUNCTION()
 		void OnStateTypeChanged(EStateType InPrevType, EStateType InNewType);
+
+	UFUNCTION()
+		void RestoreColor();
+
+private:
+	class AController* DamageInstigator;
+	float DamageValue;
+private:
+	void Hitted();
 };

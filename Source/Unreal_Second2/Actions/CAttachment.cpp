@@ -31,6 +31,8 @@ void ACAttachment::BeginPlay()
 	}
 
 	Super::BeginPlay();
+
+	OffCollision();
 	
 }
 
@@ -61,12 +63,24 @@ void ACAttachment::OnComponentEndOverlap(UPrimitiveComponent * OverlappedCompone
 void ACAttachment::OnCollision()
 {
 	for (UShapeComponent* component : ShapeComponents)
+	{
 		component->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
+		//component->SetGenerateOverlapEvents(true);
+	}
+
+	if (OnAttachmentCollision.IsBound())
+		OnAttachmentCollision.Broadcast();
 }
 
 void ACAttachment::OffCollision()
 {
 	for (UShapeComponent* component : ShapeComponents)
+	{
 		component->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+		//component->SetGenerateOverlapEvents(false);
+	}
+
+	if (OffAttachmentCollision.IsBound())
+		OffAttachmentCollision.Broadcast();
 }
 

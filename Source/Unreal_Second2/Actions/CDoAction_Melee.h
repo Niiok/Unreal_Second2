@@ -6,6 +6,7 @@
 #include "Actions/CDoAction.h"
 #include "CDoAction_Melee.generated.h"
 
+
 /**
  * 
  */
@@ -25,6 +26,9 @@ private:
 	bool bLast;
 	int32 Index;
 
+private:
+	TArray<class ACharacter*> HittedCharacters;
+
 public:
 	FORCEINLINE void EnableCombo() { bEnable = true; }
 	FORCEINLINE void DisableCombo() { bEnable = false; }
@@ -35,5 +39,8 @@ public:
 	virtual void OnAttachmentEndOverlap(class ACharacter* InAttacker,
 		class AActor* InAttackCauser,
 		class ACharacter* InOtherCharacter) override;
+
+	virtual void OnAttachmentCollision();
+	virtual void OffAttachmentCollision();
 
 };
