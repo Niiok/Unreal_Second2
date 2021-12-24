@@ -51,6 +51,9 @@ public:
 protected:
 	UFUNCTION(BlueprintCallable)
 		void AttachToActor(FName InSocketName);
+	
+	UFUNCTION(BlueprintCallable)
+		void AttachToCollision(class UShapeComponent* InComponent, FName InSocketName);
 
 	UPROPERTY(BlueprintReadOnly, VisibleDefaultsOnly)
 		class USceneComponent* Scene;

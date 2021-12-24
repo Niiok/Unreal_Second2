@@ -43,4 +43,8 @@ public:
 	virtual void OnAttachmentCollision();
 	virtual void OffAttachmentCollision();
 
+private:
+	UFUNCTION()
+		void RestoreDilation();
+
 };

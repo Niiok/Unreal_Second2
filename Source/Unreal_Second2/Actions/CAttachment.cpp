@@ -42,6 +42,12 @@ void ACAttachment::AttachToActor(FName InSocketName)
 		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), InSocketName);	
 }
 
+void ACAttachment::AttachToCollision(UShapeComponent* InComponent, FName InSocketName)
+{
+	InComponent->AttachToComponent(OwnerCharacter->GetMesh(),
+		FAttachmentTransformRules(EAttachmentRule::KeepRelative, true), InSocketName);	
+}
+
 void ACAttachment::OnComponentBeginOverlap(UPrimitiveComponent * OverlappedComponent, AActor * OtherActor, UPrimitiveComponent * OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult)
 {
 	CheckTrue(OwnerCharacter == OtherActor);
