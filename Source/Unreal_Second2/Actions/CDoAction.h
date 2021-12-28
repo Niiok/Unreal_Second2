@@ -25,6 +25,11 @@ UPROPERTY(BlueprintReadOnly)
 protected:
 	TArray<FDoActionData> Datas;
 
+protected:
+	const bool* bEquipped;
+public:
+	FORCEINLINE void SetEquipped(const bool* InEquipped) { bEquipped = InEquipped; }
+
 public:	
 	// Sets default values for this actor's properties
 	ACDoAction();

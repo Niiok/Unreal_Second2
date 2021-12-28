@@ -33,6 +33,9 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCActionComponent* Action;	
 
+	UPROPERTY(VisibleDefaultsOnly)
+		class UCTargetComponent* Target;
+
 public:
 	ACPlayer();
 
@@ -66,6 +69,8 @@ private:
 	void OnFist();
 	void OnOneHand();
 	void OnTwoHand();
+	void OnWarp();
+	void OnTarget();
 	void OnDoAction();
 
 private:

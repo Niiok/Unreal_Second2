@@ -28,6 +28,8 @@ protected:
 private:
 	FEquipmentData Data;
 	FLinearColor Color;
+	bool bEquipped;
+
 
 public:	
 	// Sets default values for this actor's properties
@@ -66,5 +68,5 @@ public:
 public:
 	FORCEINLINE void SetData(FEquipmentData InData) { Data = InData; }
 	FORCEINLINE void SetColor(FLinearColor InColor) { Color = InColor; }
-
+	FORCEINLINE const bool* GetEquipped() { return &bEquipped; }
 };

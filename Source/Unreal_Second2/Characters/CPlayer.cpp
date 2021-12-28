@@ -10,6 +10,7 @@
 #include "Component/CStateComponent.h"
 #include "Component/CMontagesComponent.h"
 #include "Component/CActionComponent.h"
+#include "Component/CTargetComponent.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
@@ -25,6 +26,7 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent<UCStateComponent>(this, &State, "State");
 	CHelpers::CreateActorComponent<UCMontagesComponent>(this, &Montages, "Montages");
 	CHelpers::CreateActorComponent<UCActionComponent>(this, &Action, "Action");
+	CHelpers::CreateActorComponent<UCTargetComponent>(this, &Target, "Target");
 
 	bUseControllerRotationYaw = false;
 
@@ -92,7 +94,9 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("Fist", IE_Pressed, this, &ACPlayer::OnFist);
 	PlayerInputComponent->BindAction("OneHand", IE_Pressed, this, &ACPlayer::OnOneHand);
 	PlayerInputComponent->BindAction("TwoHand", IE_Pressed, this, &ACPlayer::OnTwoHand);
+	PlayerInputComponent->BindAction("Warp", IE_Pressed, this, &ACPlayer::OnWarp);
 	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &ACPlayer::OnDoAction);
+	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &ACPlayer::OnTarget);
 }
 
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
@@ -176,7 +180,7 @@ void ACPlayer::Begin_Backstep()
 
 void ACPlayer::End_Roll()
 {
-	if (Action->IsUnarmedMode() == false)
+	if (Action->IsUnarmedMode() == false && Action->IsWarpMode() == false)
 	{
 		bUseControllerRotationYaw = true;
 		GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -187,7 +191,7 @@ void ACPlayer::End_Roll()
 
 void ACPlayer::End_Backstep()
 {
-	if (Action->IsUnarmedMode())
+	if (Action->IsUnarmedMode() || Action->IsWarpMode())
 	{
 		bUseControllerRotationYaw = false;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -214,9 +218,20 @@ void ACPlayer::OnTwoHand()
 	Action->SetTwoHandMode();
 }
 
+void ACPlayer::OnWarp()
+{
+	CheckFalse(State->IsIdleMode());
+	Action->SetWarpMode();
+}
+
 void ACPlayer::OnDoAction()
 {
 	Action->DoAction();
+}
+
+void ACPlayer::OnTarget()
+{
+	Target->ToggleTarget();
 }
 
 void ACPlayer::ChangeColor(FLinearColor InColor)
