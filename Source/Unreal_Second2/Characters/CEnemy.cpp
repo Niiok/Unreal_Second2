@@ -8,17 +8,18 @@
 #include "GameFramework/CharacterMovementComponent.h"
 
 #include "Animation/AnimInstance.h"
-//#include "Components/SkeletalMeshComponent.h"
+#include "Components/SkeletalMeshComponent.h"
 //#include "Components/InputComponent.h"
+#include "Components/WidgetComponent.h"
+#include "Components/CapsuleComponent.h"
 //#include "Component/COptionComponent.h"
-#include "Component/CStatusComponent.h"
 
+#include "Component/CStatusComponent.h"
 #include "Component/CMontagesComponent.h"
 #include "Component/CActionComponent.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
 
-#include "Components/WidgetComponent.h"
 #include "Widgets/CUserWidget_Name.h"
 #include "Widgets/CUserWidget_Health.h"
 
@@ -132,6 +133,7 @@ void ACEnemy::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
 	switch (InNewType)
 	{
 	case EStateType::Hitted: Hitted(); break;
+	case EStateType::Dead: Dead(); break;
 	}
 }
 
@@ -151,6 +153,15 @@ void ACEnemy::Hitted()
 	DamageValue = 0.0f;
 
 	Status->SetStop();
+
+	// check dead
+	if (Status->GetHealth() <= 0.0f)
+	{
+		State->SetDeadMode();
+		return;
+	}
+	//
+
 	Montages->PlayHitted();
 
 	FVector start = GetActorLocation();
@@ -167,6 +178,24 @@ void ACEnemy::Hitted()
 	UKismetSystemLibrary::K2_SetTimer(this, "RestoreColor", 0.1f, false);
 
 }
+
+void ACEnemy::Dead()
+{
+	CheckFalse(State->IsDeadMode());
+
+	Montages->PlayDead();
+
+}
+void ACEnemy::Begin_Dead()
+{
+	Action->OffAllCollision();
+	GetCapsuleComponent()->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+}
+void ACEnemy::End_Dead()
+{
+	Destroy();
+}
+
 
 // Called to bind functionality to input
 //void ACEnemy::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)

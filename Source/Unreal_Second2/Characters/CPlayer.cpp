@@ -96,7 +96,10 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("TwoHand", IE_Pressed, this, &ACPlayer::OnTwoHand);
 	PlayerInputComponent->BindAction("Warp", IE_Pressed, this, &ACPlayer::OnWarp);
 	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &ACPlayer::OnDoAction);
+
 	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &ACPlayer::OnTarget);
+	PlayerInputComponent->BindAction("TargetLeft", IE_Pressed, this, &ACPlayer::OnTargetLeft);
+	PlayerInputComponent->BindAction("TargetRight", IE_Pressed, this, &ACPlayer::OnTargetRight);
 }
 
 void ACPlayer::OnStateTypeChanged(EStateType InPrevType, EStateType InNewType)
@@ -232,6 +235,16 @@ void ACPlayer::OnDoAction()
 void ACPlayer::OnTarget()
 {
 	Target->ToggleTarget();
+}
+
+void ACPlayer::OnTargetLeft()
+{
+	Target->ChangeTargetLeft();
+}
+
+void ACPlayer::OnTargetRight()
+{
+	Target->ChangeTargetRight();
 }
 
 void ACPlayer::ChangeColor(FLinearColor InColor)

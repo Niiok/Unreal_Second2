@@ -78,4 +78,8 @@ private:
 	float DamageValue;
 private:
 	void Hitted();
+	void Dead();
+
+	void Begin_Dead() override;
+	void End_Dead() override;
 };

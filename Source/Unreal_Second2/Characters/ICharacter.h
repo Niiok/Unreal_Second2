@@ -23,4 +23,6 @@ class UNREAL_SECOND2_API IICharacter
 	// Add interface functions to this class. This is the class that will be inherited to implement this interface.
 public:
 	virtual void ChangeColor(FLinearColor InColor) = 0;
+	virtual void Begin_Dead() {}
+	virtual void End_Dead() {}
 };

@@ -7,6 +7,7 @@
 #include "Actions/CDoAction.h"
 #include "GameFramework/Character.h"
 #include "Actions/CEquipment.h"
+#include "Actions/CAttachment.h"
 
 // Sets default values for this component's properties
 UCActionComponent::UCActionComponent()
@@ -113,5 +114,19 @@ void UCActionComponent::DoAction()
 		
 		if (!!action)
 			action->DoAction();
+	}
+}
+
+void UCActionComponent::OffAllCollision()
+{
+	for (UCActionData* data : Datas)
+	{
+		if (!!data == false)
+			continue;
+
+		if (!!data->GetAttachment() == false)
+			continue;
+
+		data->GetAttachment()->OffCollision();
 	}
 }

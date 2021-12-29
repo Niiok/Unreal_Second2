@@ -16,16 +16,22 @@ class UNREAL_SECOND2_API UCTargetComponent : public UActorComponent
 private:
 	class ACharacter* OwnerCharacter;
 	class ACharacter* Target;
+	class UParticleSystemComponent* Attached;
 
 private:
 	UPROPERTY(EditAnywhere)
 		float TraceRadius = 1000.0f;
 	UPROPERTY(EditAnywhere)
 		TEnumAsByte<EDrawDebugTrace::Type> Debug;
+	UPROPERTY(EditAnywhere)
+		class UParticleSystem* Particle;
+
+	UPROPERTY(EditAnywhere)
+		float InteropSpeed = 2.5f;
+
 
 private:
 	TArray<class ACharacter*> TraceTargets;
-
 
 public:	
 	// Sets default values for this component's properties
@@ -44,8 +50,13 @@ private:
 	void EndTargeting();
 	void SetTraceTargets();
 	void SetTarget();
+	void ChangeCursor(class ACharacter* InTarget);
+	void ChangeTarget(bool InRight);
 
 public:
 	void ToggleTarget();
+	void ChangeTargetLeft();
+	void ChangeTargetRight();
+
 
 };
