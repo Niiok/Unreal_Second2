@@ -95,8 +95,13 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	PlayerInputComponent->BindAction("OneHand", IE_Pressed, this, &ACPlayer::OnOneHand);
 	PlayerInputComponent->BindAction("TwoHand", IE_Pressed, this, &ACPlayer::OnTwoHand);
 	PlayerInputComponent->BindAction("Warp", IE_Pressed, this, &ACPlayer::OnWarp);
+	PlayerInputComponent->BindAction("FireStorm", IE_Pressed, this, &ACPlayer::OnFireStorm);
+	PlayerInputComponent->BindAction("IceBall", IE_Pressed, this, &ACPlayer::OnIceBall);
 	PlayerInputComponent->BindAction("Action", IE_Pressed, this, &ACPlayer::OnDoAction);
-
+	
+	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ACPlayer::OnAim);
+	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ACPlayer::OffAim);
+	
 	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &ACPlayer::OnTarget);
 	PlayerInputComponent->BindAction("TargetLeft", IE_Pressed, this, &ACPlayer::OnTargetLeft);
 	PlayerInputComponent->BindAction("TargetRight", IE_Pressed, this, &ACPlayer::OnTargetRight);
@@ -183,7 +188,7 @@ void ACPlayer::Begin_Backstep()
 
 void ACPlayer::End_Roll()
 {
-	if (Action->IsUnarmedMode() == false && Action->IsWarpMode() == false)
+	if (!Action->IsUnarmedMode() && !Action->IsWarpMode() && !Action->IsFireStormMode())
 	{
 		bUseControllerRotationYaw = true;
 		GetCharacterMovement()->bOrientRotationToMovement = false;
@@ -194,7 +199,7 @@ void ACPlayer::End_Roll()
 
 void ACPlayer::End_Backstep()
 {
-	if (Action->IsUnarmedMode() || Action->IsWarpMode())
+	if (Action->IsUnarmedMode() || Action->IsWarpMode() || Action->IsFireStormMode())
 	{
 		bUseControllerRotationYaw = false;
 		GetCharacterMovement()->bOrientRotationToMovement = true;
@@ -227,9 +232,31 @@ void ACPlayer::OnWarp()
 	Action->SetWarpMode();
 }
 
+void ACPlayer::OnFireStorm()
+{
+	CheckFalse(State->IsIdleMode());
+	Action->SetFireStormMode();
+}
+
+void ACPlayer::OnIceBall()
+{
+	CheckFalse(State->IsIdleMode());
+	Action->SetIceBallMode();
+}
+
 void ACPlayer::OnDoAction()
 {
 	Action->DoAction();
+}
+
+void ACPlayer::OnAim()
+{
+	Action->DoAim(true);
+}
+
+void ACPlayer::OffAim()
+{
+	Action->DoAim(false);
 }
 
 void ACPlayer::OnTarget()

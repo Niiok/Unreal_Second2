@@ -47,6 +47,9 @@ public:
 	virtual void Begin_DoAction() {}
 	virtual void End_DoAction() {}
 
+	virtual void OnAim() {}
+	virtual void OffAim() {}
+
 public:
 	FORCEINLINE void SetDatas(TArray<FDoActionData> InDatas) { Datas = InDatas; }
 
