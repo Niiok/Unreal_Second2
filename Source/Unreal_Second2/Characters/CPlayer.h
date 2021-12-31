@@ -36,6 +36,9 @@ private:
 	UPROPERTY(VisibleDefaultsOnly)
 		class UCTargetComponent* Target;
 
+	UPROPERTY(VisibleDefaultsOnly)
+		TSubclassOf<class UCUserWidget_ActionList> ActionListClass;
+
 public:
 	ACPlayer();
 
@@ -66,12 +69,19 @@ public:
 	void End_Backstep();
 
 private:
+	UFUNCTION()
 	void OnFist();
+	UFUNCTION()
 	void OnOneHand();
+	UFUNCTION()
 	void OnTwoHand();
+	UFUNCTION()
 	void OnWarp();
+	UFUNCTION()
 	void OnFireStorm();
+	UFUNCTION()
 	void OnIceBall();
+
 	void OnTarget();
 	void OnTargetLeft();
 	void OnTargetRight();
@@ -80,9 +90,16 @@ private:
 	void OnAim();
 	void OffAim();
 
+	void OnViewActionList();
+	void OffViewActionList();
+
 private:
 	class UMaterialInstanceDynamic* BodyMaterial;
 	class UMaterialInstanceDynamic* LogoMaterial;
+	class UCUserWidget_ActionList* ActionList;
+
+public:
+	FORCEINLINE class UCUserWidget_ActionList* GetActionList() { return ActionList; }
 
 
 	// IICharacter을(를) 통해 상속됨

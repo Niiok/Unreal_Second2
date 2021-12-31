@@ -13,6 +13,7 @@
 #include "Component/CTargetComponent.h"
 #include "Materials/MaterialInstanceConstant.h"
 #include "Materials/MaterialInstanceDynamic.h"
+#include "Widgets/CUserWidget_ActionList.h"
 
 
 ACPlayer::ACPlayer()
@@ -27,6 +28,8 @@ ACPlayer::ACPlayer()
 	CHelpers::CreateActorComponent<UCMontagesComponent>(this, &Montages, "Montages");
 	CHelpers::CreateActorComponent<UCActionComponent>(this, &Action, "Action");
 	CHelpers::CreateActorComponent<UCTargetComponent>(this, &Target, "Target");
+	CHelpers::GetClass<UCUserWidget_ActionList>(&ActionListClass,
+		TEXT("WidgetBlueprint'/Game/Widgets/WB_ActionList.WB_ActionList_C'"));
 
 	bUseControllerRotationYaw = false;
 
@@ -72,6 +75,19 @@ void ACPlayer::BeginPlay()
 	GetMesh()->SetMaterial(1, LogoMaterial);
 
 	Action->SetUnarmedMode();
+
+	ActionList = CreateWidget<UCUserWidget_ActionList, APlayerController>
+		(GetController<APlayerController>(), ActionListClass);
+
+	ActionList->AddToViewport();
+	ActionList->SetVisibility(ESlateVisibility::Hidden);
+
+	ActionList->GetData(0).OnUserWidget_ActionItem_Clicked.AddDynamic(this, &ACPlayer::OnFist);
+	ActionList->GetData(1).OnUserWidget_ActionItem_Clicked.AddDynamic(this, &ACPlayer::OnOneHand);
+	ActionList->GetData(2).OnUserWidget_ActionItem_Clicked.AddDynamic(this, &ACPlayer::OnTwoHand);
+	ActionList->GetData(3).OnUserWidget_ActionItem_Clicked.AddDynamic(this, &ACPlayer::OnWarp);
+	ActionList->GetData(4).OnUserWidget_ActionItem_Clicked.AddDynamic(this, &ACPlayer::OnFireStorm);
+	ActionList->GetData(5).OnUserWidget_ActionItem_Clicked.AddDynamic(this, &ACPlayer::OnIceBall);
 }
 
 void ACPlayer::Tick(float DeltaTime)
@@ -101,6 +117,9 @@ void ACPlayer::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 	
 	PlayerInputComponent->BindAction("Aim", IE_Pressed, this, &ACPlayer::OnAim);
 	PlayerInputComponent->BindAction("Aim", IE_Released, this, &ACPlayer::OffAim);
+
+	PlayerInputComponent->BindAction("ViewActionList", IE_Pressed, this, &ACPlayer::OnViewActionList);
+	PlayerInputComponent->BindAction("ViewActionList", IE_Released, this, &ACPlayer::OffViewActionList);
 	
 	PlayerInputComponent->BindAction("Target", IE_Pressed, this, &ACPlayer::OnTarget);
 	PlayerInputComponent->BindAction("TargetLeft", IE_Pressed, this, &ACPlayer::OnTargetLeft);
@@ -257,6 +276,28 @@ void ACPlayer::OnAim()
 void ACPlayer::OffAim()
 {
 	Action->DoAim(false);
+}
+
+void ACPlayer::OnViewActionList()
+{
+	CheckFalse(State->IsIdleMode());
+
+	ActionList->SetVisibility(ESlateVisibility::Visible);
+
+	GetController<APlayerController>()->bShowMouseCursor = true;
+	GetController<APlayerController>()->SetInputMode(FInputModeGameAndUI());
+
+	UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 0.1f);
+}
+
+void ACPlayer::OffViewActionList()
+{
+	//ActionList->SetVisibility(ESlateVisibility::Hidden);
+
+	//GetController<APlayerController>()->bShowMouseCursor = false;
+	//GetController<APlayerController>()->SetInputMode(FInputModeGameOnly());
+
+	//UGameplayStatics::SetGlobalTimeDilation(GetWorld(), 1.0f);
 }
 
 void ACPlayer::OnTarget()

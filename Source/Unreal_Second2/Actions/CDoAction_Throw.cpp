@@ -9,6 +9,7 @@
 #include "Component/CStateComponent.h"
 #include "Component/CStatusComponent.h"
 #include "CAim.h"
+#include "CThrow.h"
 
 
 void ACDoAction_Throw::BeginPlay()
@@ -22,6 +23,9 @@ void ACDoAction_Throw::BeginPlay()
 
 void ACDoAction_Throw::DoAction()
 {
+	if (Aim->IsAvailable())
+		CheckFalse(Aim->InZoom());
+
 	CheckFalse(State->IsIdleMode());
 	State->SetActionMode();
 
@@ -34,12 +38,29 @@ void ACDoAction_Throw::DoAction()
 
 void ACDoAction_Throw::Begin_DoAction()
 {
+	FVector location = OwnerCharacter->GetMesh()->GetSocketLocation(
+		"Hand_Throw_Projectile");
+	FRotator rotator = OwnerCharacter->GetController()->GetControlRotation();
+
+	FTransform transform = Datas[0].EffectTransform;
+	transform.AddToTranslation(location);
+	transform.SetRotation(FQuat(rotator));
+
+	FActorSpawnParameters params;
+	params.Owner = OwnerCharacter;
+
+	ACThrow* throwObject = OwnerCharacter->GetWorld()->SpawnActorDeferred<ACThrow>(
+		Datas[0].ThrowClass, transform, OwnerCharacter, NULL,
+		ESpawnActorCollisionHandlingMethod::AlwaysSpawn);
+
+	throwObject->OnThrowBeginOverlap.AddDynamic(this, &ACDoAction_Throw::OnThrowBeginOverlap);
+	UGameplayStatics::FinishSpawningActor(throwObject, transform);
 }
 
 void ACDoAction_Throw::End_DoAction()
 {
 	State->SetIdleMode();
-	Status->CanMove();
+	Status->SetMove();
 }
 
 void ACDoAction_Throw::Tick(float DeltaTime)
@@ -57,4 +78,10 @@ void ACDoAction_Throw::OnAim()
 void ACDoAction_Throw::OffAim()
 {
 	Aim->OffAim();
+}
+
+void ACDoAction_Throw::OnThrowBeginOverlap(FHitResult InHitResult)
+{
+	FDamageEvent e;
+	InHitResult.GetActor()->TakeDamage(Datas[0].Power, e, OwnerCharacter->GetController(), this);
 }
